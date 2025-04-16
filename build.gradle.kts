@@ -30,6 +30,7 @@ dependencies {
     dokka(projects.exposed.exposedMoney)
     dokka(projects.exposed.exposedSpringBootStarter)
     dokka(projects.exposed.springTransaction)
+    dokka(projects.exposed.exposedVersionCatalog)
 }
 
 repositories {
@@ -38,13 +39,13 @@ repositories {
 }
 
 allprojects {
-    if (this.name != "exposed-tests" && this.name != "exposed-bom" && this != rootProject) {
+    if (this.name != "exposed-tests" && this.name != "exposed-bom" && this.name != "exposed-version-catalog" && this != rootProject) {
         configurePublishing()
     }
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("exposed-tests", "exposed-bom"))
+    ignoredProjects.addAll(listOf("exposed-tests", "exposed-bom", "exposed-version-catalog"))
 }
 
 subprojects {
@@ -56,7 +57,7 @@ subprojects {
 }
 
 subprojects {
-    if (name == "exposed-bom") return@subprojects
+    if (name == "exposed-bom" || name == "exposed-version-catalog") return@subprojects
 
     apply(plugin = rootProject.libs.plugins.jvm.get().pluginId)
 

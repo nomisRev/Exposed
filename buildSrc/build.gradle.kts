@@ -14,6 +14,12 @@ plugins {
     `kotlin-dsl` apply true
 }
 
+// Set Java compatibility
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
 gradlePlugin {
     plugins {
         create("testWithDBs") {
