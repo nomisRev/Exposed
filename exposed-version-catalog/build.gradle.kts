@@ -1,4 +1,4 @@
-import org.jetbrains.exposed.gradle.configurePublishing
+import org.jetbrains.exposed.gradle.configureVersionCatalogPublishing
 
 catalog {
     versionCatalog {
@@ -26,4 +26,4 @@ catalog {
     }
 }
 
-configurePublishing(isVersionCatalog = true)
+configureVersionCatalogPublishing()

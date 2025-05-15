@@ -65,52 +65,70 @@ fun Project.java(configure: JavaPluginExtension.() -> Unit) {
     extensions.configure("java", configure)
 }
 
-fun Project.configurePublishing(isVersionCatalog: Boolean = false) {
-    if (!isVersionCatalog) {
-        apply(plugin = "java-library")
-        apply(plugin = "maven-publish")
-        apply(plugin = "signing")
+fun Project.configurePublishing() {
+    apply(plugin = "java-library")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
 
-        java {
-            withJavadocJar()
-            withSourcesJar()
-        }
-    } else {
-        apply(plugin = "version-catalog")
-        apply(plugin = "maven-publish")
-        apply(plugin = "signing")
+    java {
+        withJavadocJar()
+        withSourcesJar()
     }
 
     val version: String by rootProject
 
     publishing {
         publications {
-            if (!isVersionCatalog) {
-                create<MavenPublication>("exposed") {
-                    groupId = "org.jetbrains.exposed"
-                    artifactId = project.name
+            create<MavenPublication>("exposed") {
+                groupId = "org.jetbrains.exposed"
+                artifactId = project.name
 
-                    setVersion(version)
+                setVersion(version)
 
-                    from(components["java"])
-                    pom {
-                        configureMavenCentralMetadata(project)
-                    }
-                    signPublicationIfKeyPresent(project)
+                from(components["java"])
+                pom {
+                    configureMavenCentralMetadata(project)
                 }
-            } else {
-                create<MavenPublication>("versionCatalog") {
-                    groupId = "org.jetbrains.exposed"
-                    artifactId = project.name
+                signPublicationIfKeyPresent(project)
+            }
+        }
 
-                    setVersion(version)
+        val publishingUsername: String? = System.getenv("PUBLISHING_USERNAME")
+        val publishingPassword: String? = System.getenv("PUBLISHING_PASSWORD")
 
-                    from(components["versionCatalog"])
-                    pom {
-                        configureMavenCentralMetadata(project)
-                    }
-                    signPublicationIfKeyPresent(project)
+        repositories {
+            maven {
+                name = "Exposed"
+                url = uri("https://maven.pkg.jetbrains.space/public/p/exposed/release")
+                credentials {
+                    username = publishingUsername
+                    password = publishingPassword
                 }
+            }
+        }
+    }
+}
+
+fun Project.configureVersionCatalogPublishing() {
+    apply(plugin = "version-catalog")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+
+    val version: String by rootProject
+
+    publishing {
+        publications {
+            create<MavenPublication>("versionCatalog") {
+                groupId = "org.jetbrains.exposed"
+                artifactId = project.name
+
+                setVersion(version)
+
+                from(components["versionCatalog"])
+                pom {
+                    configureMavenCentralMetadata(project)
+                }
+                signPublicationIfKeyPresent(project)
             }
         }
 
