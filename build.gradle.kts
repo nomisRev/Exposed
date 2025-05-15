@@ -44,7 +44,7 @@ allprojects {
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("exposed-tests", "exposed-bom"))
+    ignoredProjects.addAll(listOf("exposed-tests", "exposed-bom", "exposed-version-catalog"))
 }
 
 subprojects {
