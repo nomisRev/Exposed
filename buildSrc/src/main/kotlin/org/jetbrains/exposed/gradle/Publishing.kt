@@ -108,3 +108,40 @@ fun Project.configurePublishing() {
         }
     }
 }
+
+fun Project.configurePublishingVersionCatalog() {
+    apply(plugin = "version-catalog")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+
+    val version: String by rootProject
+
+    publishing {
+        publications {
+            create<MavenPublication>("versionCatalog") {
+                groupId = "org.jetbrains.exposed"
+                artifactId = project.name
+                this.version = version
+                from(components["versionCatalog"])
+                pom {
+                    configureMavenCentralMetadata(project)
+                }
+                signPublicationIfKeyPresent(project)
+            }
+        }
+
+        val publishingUsername: String? = System.getenv("PUBLISHING_USERNAME")
+        val publishingPassword: String? = System.getenv("PUBLISHING_PASSWORD")
+
+        repositories {
+            maven {
+                name = "Exposed"
+                url = uri("https://maven.pkg.jetbrains.space/public/p/exposed/release")
+                credentials {
+                    username = publishingUsername
+                    password = publishingPassword
+                }
+            }
+        }
+    }
+}
