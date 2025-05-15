@@ -38,7 +38,7 @@ repositories {
 }
 
 allprojects {
-    if (this.name != "exposed-tests" && this.name != "exposed-bom" && this.name != "exposed-version-catalog" && this != rootProject) {
+    if (this.name != "exposed-tests" && this.name != "exposed-bom" && this != rootProject) {
         configurePublishing()
     }
 }
