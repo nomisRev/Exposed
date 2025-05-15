@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.dokka)
 }
 
-import org.jetbrains.exposed.gradle.configurePublishing
+import org.jetbrains.exposed.gradle.configurePublishingVersionCatalog
 
 repositories {
     mavenCentral()
@@ -36,4 +36,4 @@ catalog {
     }
 }
 
-configurePublishing()
+configurePublishingVersionCatalog()
