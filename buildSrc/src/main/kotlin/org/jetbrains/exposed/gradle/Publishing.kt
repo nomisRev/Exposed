@@ -11,6 +11,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.plugins.signing.SigningExtension
+import org.gradle.api.artifacts.dsl.RepositoryHandler
 
 infix fun <T> Property<T>.by(value: T) {
     set(value)
@@ -93,18 +94,49 @@ fun Project.configurePublishing() {
             }
         }
 
-        val publishingUsername: String? = System.getenv("PUBLISHING_USERNAME")
-        val publishingPassword: String? = System.getenv("PUBLISHING_PASSWORD")
+        configureRepositories()
+    }
+}
 
-        repositories {
-            maven {
-                name = "Exposed"
-                url = uri("https://maven.pkg.jetbrains.space/public/p/exposed/release")
-                credentials {
-                    username = publishingUsername
-                    password = publishingPassword
-                }
+fun PublishingExtension.configureRepositories() {
+    val publishingUsername: String? = System.getenv("PUBLISHING_USERNAME")
+    val publishingPassword: String? = System.getenv("PUBLISHING_PASSWORD")
+
+    repositories {
+        maven {
+            name = "Exposed"
+            url = uri("https://maven.pkg.jetbrains.space/public/p/exposed/release")
+            credentials {
+                username = publishingUsername
+                password = publishingPassword
             }
         }
+    }
+}
+
+fun Project.configurePublishingVersionCatalog() {
+    apply(plugin = "version-catalog")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+
+    val version: String by rootProject
+
+    publishing {
+        publications {
+            create<MavenPublication>("exposedVersionCatalog") {
+                groupId = "org.jetbrains.exposed"
+                artifactId = project.name
+
+                setVersion(version)
+
+                from(components["versionCatalog"])
+                pom {
+                    configureMavenCentralMetadata(project)
+                }
+                signPublicationIfKeyPresent(project)
+            }
+        }
+
+        configureRepositories()
     }
 }
