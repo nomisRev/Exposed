@@ -65,31 +65,52 @@ fun Project.java(configure: JavaPluginExtension.() -> Unit) {
     extensions.configure("java", configure)
 }
 
-fun Project.configurePublishing() {
-    apply(plugin = "java-library")
-    apply(plugin = "maven-publish")
-    apply(plugin = "signing")
+fun Project.configurePublishing(isVersionCatalog: Boolean = false) {
+    if (!isVersionCatalog) {
+        apply(plugin = "java-library")
+        apply(plugin = "maven-publish")
+        apply(plugin = "signing")
 
-    java {
-        withJavadocJar()
-        withSourcesJar()
+        java {
+            withJavadocJar()
+            withSourcesJar()
+        }
+    } else {
+        apply(plugin = "version-catalog")
+        apply(plugin = "maven-publish")
+        apply(plugin = "signing")
     }
 
     val version: String by rootProject
 
     publishing {
         publications {
-            create<MavenPublication>("exposed") {
-                groupId = "org.jetbrains.exposed"
-                artifactId = project.name
+            if (!isVersionCatalog) {
+                create<MavenPublication>("exposed") {
+                    groupId = "org.jetbrains.exposed"
+                    artifactId = project.name
 
-                setVersion(version)
+                    setVersion(version)
 
-                from(components["java"])
-                pom {
-                    configureMavenCentralMetadata(project)
+                    from(components["java"])
+                    pom {
+                        configureMavenCentralMetadata(project)
+                    }
+                    signPublicationIfKeyPresent(project)
                 }
-                signPublicationIfKeyPresent(project)
+            } else {
+                create<MavenPublication>("versionCatalog") {
+                    groupId = "org.jetbrains.exposed"
+                    artifactId = project.name
+
+                    setVersion(version)
+
+                    from(components["versionCatalog"])
+                    pom {
+                        configureMavenCentralMetadata(project)
+                    }
+                    signPublicationIfKeyPresent(project)
+                }
             }
         }
 
