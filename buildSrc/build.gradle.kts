@@ -24,12 +24,15 @@ tasks.withType<JavaCompile>().configureEach {
     sourceCompatibility = "17"
     targetCompatibility = "17"
 }
-
 gradlePlugin {
     plugins {
         create("testWithDBs") {
             id = "testWithDBs"
             implementationClass = "org.jetbrains.exposed.gradle.DBTestingPlugin"
+        }
+        create("versionCatalog") {
+            id = "exposed.version-catalog"
+            implementationClass = "org.jetbrains.exposed.gradle.VersionCatalogPlugin"
         }
     }
 }
