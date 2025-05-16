@@ -11,6 +11,7 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.plugins.signing.SigningExtension
+import org.gradle.plugin.devel.plugins.JavaGradlePluginPlugin
 
 infix fun <T> Property<T>.by(value: T) {
     set(value)
@@ -86,6 +87,43 @@ fun Project.configurePublishing() {
                 setVersion(version)
 
                 from(components["java"])
+                pom {
+                    configureMavenCentralMetadata(project)
+                }
+                signPublicationIfKeyPresent(project)
+            }
+        }
+
+        val publishingUsername: String? = System.getenv("PUBLISHING_USERNAME")
+        val publishingPassword: String? = System.getenv("PUBLISHING_PASSWORD")
+
+        repositories {
+            maven {
+                name = "Exposed"
+                url = uri("https://maven.pkg.jetbrains.space/public/p/exposed/release")
+                credentials {
+                    username = publishingUsername
+                    password = publishingPassword
+                }
+            }
+        }
+    }
+}
+
+fun Project.configureVersionCatalogPublishing() {
+    apply(plugin = "version-catalog")
+    apply(plugin = "maven-publish")
+    apply(plugin = "signing")
+
+    val version: String by rootProject
+
+    publishing {
+        publications {
+            create<MavenPublication>("versionCatalog") {
+                groupId = "org.jetbrains.exposed"
+                artifactId = project.name
+                this.version = version
+                from(components["versionCatalog"])
                 pom {
                     configureMavenCentralMetadata(project)
                 }

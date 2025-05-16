@@ -38,13 +38,13 @@ repositories {
 }
 
 allprojects {
-    if (this.name != "exposed-tests" && this.name != "exposed-bom" && this != rootProject) {
+    if (this.name != "exposed-tests" && this.name != "exposed-bom" && this.name != "exposed-version-catalog" && this != rootProject) {
         configurePublishing()
     }
 }
 
 apiValidation {
-    ignoredProjects.addAll(listOf("exposed-tests", "exposed-bom"))
+    ignoredProjects.addAll(listOf("exposed-tests", "exposed-bom", "exposed-version-catalog"))
 }
 
 subprojects {

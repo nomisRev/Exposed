@@ -140,13 +140,13 @@ dependencies {
     implementation 'org.jetbrains.exposed:exposed-crypt:0.60.0'
     implementation 'org.jetbrains.exposed:exposed-dao:0.60.0'
     implementation 'org.jetbrains.exposed:exposed-jdbc:0.60.0'
-    
+
     implementation 'org.jetbrains.exposed:exposed-jodatime:0.60.0'
     // or
     implementation 'org.jetbrains.exposed:exposed-java-time:0.60.0'
     // or
     implementation 'org.jetbrains.exposed:exposed-kotlin-datetime:0.60.0'
-    
+
     implementation 'org.jetbrains.exposed:exposed-json:0.60.0'
     implementation 'org.jetbrains.exposed:exposed-money:0.60.0'
     implementation 'org.jetbrains.exposed:exposed-spring-boot-starter:0.60.0'
@@ -164,13 +164,13 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-crypt:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-dao:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
-    
+
     implementation("org.jetbrains.exposed:exposed-jodatime:$exposedVersion")
     // or
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
     // or
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
-    
+
     implementation("org.jetbrains.exposed:exposed-json:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-money:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-spring-boot-starter:$exposedVersion")
@@ -181,6 +181,45 @@ and in `gradle.properties`
 
 ```
 exposedVersion=0.60.0
+```
+
+#### Version Catalog
+
+Exposed also provides a version catalog that you can use in your Gradle project. This allows you to use a more concise syntax for declaring dependencies.
+
+In `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("exposed") {
+            from("org.jetbrains.exposed:exposed-version-catalog:0.60.0")
+        }
+    }
+}
+```
+
+In `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation(exposed.core)
+    implementation(exposed.dao)
+    implementation(exposed.jdbc)
+
+    // Choose one of the date-time extensions
+    implementation(exposed.jodatime)
+    // or
+    implementation(exposed.java.time)
+    // or
+    implementation(exposed.kotlin.datetime)
+
+    // Optional extensions
+    implementation(exposed.json)
+    implementation(exposed.money)
+    implementation(exposed.spring.transaction)
+    implementation(exposed.spring.boot.starter)
+}
 ```
 
 ## Samples
@@ -310,7 +349,7 @@ fun main() {
         }
 
         println("Manual join:")
-        
+
         (Users innerJoin Cities)
             .select(Users.name, Cities.name)
             .where {
